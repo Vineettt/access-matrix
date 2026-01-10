@@ -1,0 +1,6 @@
+node_modules/
+1Planning/
+data/
+database.json
+routes.json
+dist/

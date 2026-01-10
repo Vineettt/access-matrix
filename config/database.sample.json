@@ -1,0 +1,15 @@
+{
+    "database": {
+        "type": "sqlite",
+        "config": {
+            "sqlite": {
+                "mode": "file",
+                "file_name": "access-matrix.db",
+                "verbose": false
+            }
+        }
+    },
+    "route":{
+        "loading": "json"
+    }
+}

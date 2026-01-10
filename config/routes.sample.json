@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/admin/dashboard",
+    "method": "GET"
+  },
+  {
+    "path": "/api/profile",
+    "method": "PUT"
+  },
+  {
+    "path": "/about",
+    "method": "GET"
+  }
+]
