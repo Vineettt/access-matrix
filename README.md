@@ -61,7 +61,7 @@ const ac = await AccessControl.create<AppRoute>({
 
 - [API Reference](docs/API.md)
 - [Configuration Guide](docs/CONFIGURATION.md)
-- [Examples](examples/)
+- [Examples](examples/basic-usage.ts)
 
 ## Development
 
