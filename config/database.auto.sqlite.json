@@ -1,0 +1,21 @@
+{
+    "database": {
+        "type": "sqlite",
+        "config": {
+            "sqlite": {
+                "mode": "file",
+                "file_name": "access-matrix-auto.db",
+                "verbose": true
+            }
+        }
+    },
+    "route": {
+        "loading": "auto",
+        "auto": {
+            "directories": ["src/examples"],
+            "patterns": ["*.ts", "*.js"],
+            "recursive": true,
+            "exclude": ["node_modules", "*.test.*", "*.spec.*", "*.d.ts"]
+        }
+    }
+}

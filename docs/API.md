@@ -9,22 +9,42 @@ Creates a new AccessControl instance.
 const accessControl = await AccessControl.create('./config/database.json');
 ```
 
-### `getRoute(path: string, method: string): Promise<Route | null>`
+### `addRoute(path: string, method: string, accessLevel: number, description?: string): Promise<{id: string; path: string; method: string} | null>`
+Adds a single route.
+
+```typescript
+const route = await accessControl.addRoute('/api/users', 'GET', 1, 'List users');
+```
+
+### `bulkInsertRoutes(routes: RouteData[]): Promise<Array<{id: string; path: string; method: string}>>`
+Inserts multiple routes at once.
+
+```typescript
+const routes = await accessControl.bulkInsertRoutes([
+  { path: '/api/users', method: 'GET', access: 1, levels: [1, 2, 3] },
+  { path: '/api/users', method: 'POST', access: 2, levels: [1, 2] }
+]);
+```
+
+### `getRoute(path: string, method: string): Promise<RouteData | null>`
 Gets a route by path and method.
 
 ```typescript
 const route = await accessControl.getRoute('/api/users', 'GET');
 ```
 
-### `bulkInsertRoutes(routes: RouteInput[]): Promise<Route[]>`
-Inserts multiple routes at once.
+### `getAccessLevel(path: string, method: string): Promise<number>`
+Gets the access level for a route.
 
 ```typescript
-const routes = [
-  { path: '/api/users', method: 'GET', access: 1, levels: 3 },
-  { path: '/api/users', method: 'POST', access: 2, levels: 2 }
-];
-const insertedRoutes = await accessControl.bulkInsertRoutes(routes);
+const level = await accessControl.getAccessLevel('/api/users', 'GET');
+```
+
+### `setRouteLevels(routeId: string, levelIds: number[]): Promise<void>`
+Sets which levels can access a route.
+
+```typescript
+await accessControl.setRouteLevels('route-id-1', [1, 2, 3]);
 ```
 
 ### `bulkDeleteRoutes(routeIds: string[]): Promise<void>`
@@ -51,15 +71,42 @@ Closes the database connection.
 await accessControl.close();
 ```
 
-## Adapter Methods
+## Types
 
-### `bulkAddLevels(levels: AccessLevel[]): Promise<void>`
-Adds multiple access levels at once.
+### `RouteData`
+```typescript
+interface RouteData {
+  id?: string;
+  path: string;
+  method: string;
+  access?: number;
+  description?: string;
+  levels?: number[];
+}
+```
+
+## Route Loading Functions
+
+### `loadRoutes(configPath?: string): Promise<Route[]>`
+Loads routes from configuration file.
 
 ```typescript
-const adapter = (accessControl as any).adapter;
-await adapter.bulkAddLevels([
-  { level: 1, description: 'Admin' },
-  { level: 2, description: 'Editor' }
-]);
+import { loadRoutes } from 'access-matrix';
+const routes = await loadRoutes('./config/database.json');
+```
+
+### `getRoutes(): Route[]`
+Gets all loaded routes.
+
+```typescript
+import { getRoutes } from 'access-matrix';
+const routes = getRoutes();
+```
+
+### `findRoute(path: string, method: string): Route | undefined`
+Finds a specific route.
+
+```typescript
+import { findRoute } from 'access-matrix';
+const route = findRoute('/api/users', 'GET');
 ```

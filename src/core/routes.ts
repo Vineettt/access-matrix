@@ -1,6 +1,7 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { AccessControl } from './index.js';
+import { RouteAutoLoader, AutoLoadConfig } from '../utils/route-autoloader.js';
 
 const HTTP_METHODS = new Set([
   'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT'
@@ -14,6 +15,7 @@ export interface Route {
 interface DatabaseConfig {
   route?: {
     loading?: 'json' | 'auto';
+    auto?: AutoLoadConfig;
   };
 }
 
@@ -41,9 +43,9 @@ function loadDatabaseConfig(configPath: string): DatabaseConfig {
   }
 }
 
-export function loadRoutes(
+export async function loadRoutes(
   configPath: string = path.join(process.cwd(), 'config', 'database.json')
-): Route[] {
+): Promise<Route[]> {
   if (isInitialized) {
     console.warn('Routes already loaded. Loading again will replace existing routes.');
   }
@@ -101,7 +103,16 @@ export function loadRoutes(
       return routes;
       
     } else if (loadingMode === 'auto') {
-      routes = [];
+      const autoConfig = config.route?.auto;
+      if (!autoConfig) {
+        console.warn('Auto-loading mode requires auto configuration. Using empty routes.');
+        routes = [];
+        isInitialized = true;
+        return routes;
+      }
+      
+      const autoLoader = new RouteAutoLoader(autoConfig);
+      routes = await autoLoader.loadRoutes();
       isInitialized = true;
       return routes;
     } else {
@@ -131,6 +142,28 @@ export async function syncRoutes(
   accessControl: AccessControl
 ): Promise<{ added: number; removed: number }> {
   return accessControl.syncRoutes(sourceRoutes);
+}
+
+/**
+ * Load routes from config + file system, then synchronize with the database.
+ *
+ * This will:
+ *  - read routes from `config/database.json` (or given path)
+ *  - load route definitions from files (auto or json mode)
+ *  - insert missing routes into the database
+ *  - delete routes in the database that are not found on disk
+ */
+export async function syncRoutesFromConfig(
+  configPath: string = path.join(process.cwd(), 'config', 'database.json')
+): Promise<{ added: number; removed: number }> {
+  const routes = await loadRoutes(configPath);
+  const accessControl = await AccessControl.create(configPath);
+
+  try {
+    return await accessControl.syncRoutes(routes);
+  } finally {
+    await accessControl.close();
+  }
 }
 
 export function getRoutes(): Route[] {

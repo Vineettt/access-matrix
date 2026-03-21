@@ -1,11 +1,11 @@
 import { RouteSynchronizer } from '@/utils/route-sync.ts';
 import { BaseAdapter } from '../adapters/base/adapter.ts';
 import { AdapterFactory } from './factory.ts';
-import { loadRoutes, getRoutes, findRoute } from './routes.ts';
+import { loadRoutes, getRoutes, findRoute, syncRoutesFromConfig } from './routes.ts';
 import type { Route } from './routes.ts';
 
 export type { BaseAdapter, Route };
-export { loadRoutes, getRoutes, findRoute };
+export { loadRoutes, getRoutes, findRoute, syncRoutesFromConfig };
 
 export interface RouteData {
   id?: string;

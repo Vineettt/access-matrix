@@ -1,5 +1,6 @@
 import { BaseAdapter } from '../adapters/base/adapter.ts';
 import { SQLiteAdapter } from '../adapters/sqlite/sqlite-adapter.ts';
+import { PostgresAdapter } from '../adapters/postgres/postgres-adapter.ts';
 import { DatabaseConfig, loadDatabaseConfig } from '../utils/config.ts';
 
 export class AdapterFactory {
@@ -7,7 +8,7 @@ export class AdapterFactory {
 
   static {
     this.adapters.set('sqlite', SQLiteAdapter);
-    // this.adapters.set('postgres', PostgresAdapter);
+    this.adapters.set('postgres', PostgresAdapter);
     // this.adapters.set('mysql', MySQLAdapter);
   }
 

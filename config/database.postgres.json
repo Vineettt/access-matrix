@@ -1,0 +1,22 @@
+{
+    "database": {
+        "type": "postgres",
+        "config": {
+            "postgres": {
+                "host": "localhost",
+                "port": 5434,
+                "database": "access_matrix",
+                "user": "postgres",
+                "password": "postgres",
+                "ssl": false,
+                "max": 10,
+                "idleTimeoutMillis": 30000,
+                "connectionTimeoutMillis": 2000,
+                "verbose": true
+            }
+        }
+    },
+    "route": {
+        "loading": "json"
+    }
+}

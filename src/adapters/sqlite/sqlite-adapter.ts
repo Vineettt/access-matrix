@@ -14,7 +14,7 @@ export class SQLiteAdapter implements BaseAdapter {
   constructor(config: Record<string, any> = {}) {
     this.config = {
       mode: config.mode || 'memory',
-      file_name: config.file_name || config.fileName || 'access-matrix.db',
+      file_name: config.file_name || 'access-matrix.db',
       verbose: config.verbose || false
     };
 
@@ -44,21 +44,16 @@ export class SQLiteAdapter implements BaseAdapter {
     const dataDir = path.dirname(dbPath);
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
-      if (this.config.verbose) {
-        console.log(`Created directory: ${path.resolve(dataDir)}`);
-      }
     }
 
     return path.resolve(dbPath);
   }
 
   async initialize(): Promise<void> {
-    console.log('SQLite adapter initialized');
     await this.createTable();
   }
 
   async close(): Promise<void> {
-    console.log('SQLite adapter closed');
     this.db.close();
   }
 
@@ -116,8 +111,6 @@ export class SQLiteAdapter implements BaseAdapter {
       )
     `;
     await this.query(mappingSql);
-    
-    console.log('Database tables created (routes, levels, route_level_mapping)');
   }
 
   async bulkInsertRoutes(routes: RouteData[]): Promise<Array<{id: string; path: string; method: string}>> {
@@ -134,22 +127,18 @@ export class SQLiteAdapter implements BaseAdapter {
       placeholders.push('(?, ?, ?, ?, ?)');
       values.push(routeId, route.path, route.method, access, route.description || null);
       insertedRoutes.push({ id: routeId, path: route.path, method: route.method });
-      
-      if (this.config.verbose) {
-        console.log('Preparing route:', { routeId, path: route.path, method: route.method, access });
-      }
     }
     
     const sql = `
-      INSERT OR REPLACE INTO routes (id, path, method, access, description)
+      INSERT INTO routes (id, path, method, access, description)
       VALUES ${placeholders.join(', ')}
+      ON CONFLICT(path, method) DO UPDATE SET
+        access = excluded.access,
+        description = excluded.description,
+        updated_at = CURRENT_TIMESTAMP
     `;
     
-    await this.executeSqlInTransaction(sql, values);
-    
-    if (this.config.verbose) {
-      console.log(`Bulk inserted ${routes.length} routes`);
-    }
+    this.executeSqlInTransaction(sql, values);
     
     return insertedRoutes;
   }
@@ -178,7 +167,6 @@ export class SQLiteAdapter implements BaseAdapter {
       access: number;
       description: string | null;
       level_ids: string | null;
-      route_level_ids: string | null;
     } | undefined;
 
     if (!row) return null;
@@ -206,10 +194,6 @@ export class SQLiteAdapter implements BaseAdapter {
     for (const { level, description } of levels) {
       placeholders.push('(?, ?, CURRENT_TIMESTAMP)');
       values.push(level, description);
-      
-      if (this.config.verbose) {
-        console.log('Preparing level:', { level, description });
-      }
     }
     
     const sql = `
@@ -220,11 +204,7 @@ export class SQLiteAdapter implements BaseAdapter {
         updated_at = CURRENT_TIMESTAMP
     `;
     
-    await this.executeSqlInTransaction(sql, values);
-    
-    if (this.config.verbose) {
-      console.log(`Bulk inserted/updated ${levels.length} levels`);
-    }
+    this.executeSqlInTransaction(sql, values);
   }
 
   async getLevel(level: number): Promise<{id: number, level: number, description: string, updated_at: string} | null> {
@@ -237,6 +217,18 @@ export class SQLiteAdapter implements BaseAdapter {
   async bulkAddRouteLevelMappings(mappings: Array<{routeId: string; levelId: number}>): Promise<void> {
     if (mappings.length === 0) return;
 
+    for (const { routeId, levelId } of mappings) {
+      const routeExists = this.db.prepare('SELECT 1 FROM routes WHERE id = ? LIMIT 1').get(routeId);
+      if (!routeExists) {
+        throw new Error(`Route with ID '${routeId}' does not exist`);
+      }
+      
+      const levelExists = this.db.prepare('SELECT 1 FROM levels WHERE id = ? LIMIT 1').get(levelId);
+      if (!levelExists) {
+        throw new Error(`Level with ID '${levelId}' does not exist`);
+      }
+    }
+
     const placeholders: string[] = [];
     const values: any[] = [];
     
@@ -244,10 +236,6 @@ export class SQLiteAdapter implements BaseAdapter {
       const mappingId = this.generateId();
       placeholders.push('(?, ?, ?)');
       values.push(mappingId, routeId, levelId);
-      
-      if (this.config.verbose) {
-        console.log('Preparing route-level mapping:', { mappingId, routeId, levelId });
-      }
     }
     
     const sql = `
@@ -255,11 +243,7 @@ export class SQLiteAdapter implements BaseAdapter {
       VALUES ${placeholders.join(', ')}
     `;
     
-    await this.executeSqlInTransaction(sql, values);
-    
-    if (this.config.verbose) {
-      console.log(`Bulk inserted ${mappings.length} route-level mappings`);
-    }
+    this.executeSqlInTransaction(sql, values);
   }
 
   async bulkRemoveRoutes(routeIds: string[]): Promise<void> {
@@ -268,11 +252,7 @@ export class SQLiteAdapter implements BaseAdapter {
     const placeholders = routeIds.map(() => '?').join(',');
     const sql = `DELETE FROM routes WHERE id IN (${placeholders})`;
     
-    await this.executeSqlInTransaction(sql, routeIds);
-    
-    if (this.config.verbose) {
-      console.log(`Removed ${routeIds.length} routes`);
-    }
+    this.executeSqlInTransaction(sql, routeIds);
   }
 
   async executeInTransaction<T = void>(handler: () => Promise<T>): Promise<T> {
@@ -288,10 +268,17 @@ export class SQLiteAdapter implements BaseAdapter {
     }
   }
 
-  private async executeSqlInTransaction(sql: string, params: any[] = []): Promise<Database.RunResult> {
-    return this.executeInTransaction(async () => {
+  private executeSqlInTransaction(sql: string, params: any[] = []): Database.RunResult {
+    const transaction = this.db.transaction(() => {
       const stmt = this.db.prepare(sql);
       return stmt.run(...params);
     });
+    
+    try {
+      return transaction();
+    } catch (error) {
+      console.error('Transaction failed:', error);
+      throw error;
+    }
   }
 }

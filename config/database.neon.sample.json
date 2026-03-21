@@ -1,0 +1,18 @@
+{
+    "database": {
+        "type": "postgres",
+        "config": {
+            "postgres": {
+                "connection_string": "postgresql://username:password@ep-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require",
+                "ssl": true,
+                "max": 10,
+                "idleTimeoutMillis": 30000,
+                "connectionTimeoutMillis": 2000,
+                "verbose": false
+            }
+        }
+    },
+    "route": {
+        "loading": "json"
+    }
+}

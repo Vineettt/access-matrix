@@ -4,22 +4,88 @@
 
 Create `config/database.json`:
 
+### SQLite
 ```json
 {
-  "client": "sqlite3",
-  "connection": {
-    "filename": "./data/access-control.db"
+  "database": {
+    "type": "sqlite",
+    "config": {
+      "sqlite": {
+        "mode": "file",
+        "file_name": "access-matrix.db"
+      }
+    }
   },
-  "useNullAsDefault": true
+  "route": {
+    "loading": "json"
+  }
 }
 ```
 
-### Database Support
+### PostgreSQL
+```json
+{
+  "database": {
+    "type": "postgres",
+    "config": {
+      "postgres": {
+        "host": "localhost",
+        "port": 5432,
+        "database": "access_matrix",
+        "user": "postgres",
+        "password": "password"
+      }
+    }
+  },
+  "route": {
+    "loading": "json"
+  }
+}
+```
 
-Currently, only SQLite is supported. Support for other databases is planned for future releases:
-- PostgreSQL (planned)
-- MySQL (planned)
-- MSSQL (planned)
+## Route Loading
+
+### JSON Routes
+```json
+{
+  "route": {
+    "loading": "json"
+  }
+}
+```
+
+Create `config/routes.json`:
+```json
+[
+  {
+    "path": "/api/users",
+    "method": "GET",
+    "access": 1,
+    "levels": [1, 2, 3]
+  },
+  {
+    "path": "/api/users",
+    "method": "POST",
+    "access": 2,
+    "levels": [1, 2]
+  }
+]
+```
+
+### Auto-Loading Routes
+```json
+{
+  "route": {
+    "loading": "auto",
+    "auto": {
+      "directories": ["src/routes", "api"],
+      "patterns": ["**/*.ts", "**/*.js"],
+      "recursive": true,
+      "exclude": ["node_modules", "*.test.*"]
+    }
+  }
+}
+```
 
 ## Access Levels
 
@@ -33,71 +99,23 @@ const accessLevels = [
 ];
 ```
 
-## Routes
-
-Define route access rules:
-
-```typescript
-const routes = [
-  {
-    path: '/api/users',
-    method: 'GET',
-    access: 1,
-    levels: 3
-  },
-  {
-    path: '/api/users',
-    method: 'POST',
-    access: 2,
-    levels: 2
-  }
-];
-```
-
 ## Environment Variables
 
-Use environment variables in `database.json` for SQLite configuration:
+Use environment variables in configuration:
 
 ```json
 {
-  "client": "sqlite3",
-  "connection": {
-    "filename": "${DB_PATH || './data/access-control.db'}"
-  },
-  "useNullAsDefault": true
-}
-```
-
-## Initialization Example
-
-```typescript
-import { AccessControl } from 'access-matrix';
-
-// Define your access levels and routes
-const accessLevels = [
-  { level: 1, description: 'Admin' },
-  { level: 2, description: 'Editor' },
-  { level: 3, description: 'Viewer' }
-];
-
-const routes = [
-  {
-    path: '/api/users',
-    method: 'GET',
-    access: 1,
-    levels: 3
+  "database": {
+    "type": "postgres",
+    "config": {
+      "postgres": {
+        "host": "${DB_HOST || localhost}",
+        "port": "${DB_PORT || 5432}",
+        "database": "${DB_NAME || access_matrix}",
+        "user": "${DB_USER || postgres}",
+        "password": "${DB_PASSWORD || password}"
+      }
+    }
   }
-];
-
-async function initializeAccessControl() {
-  // Initialize with your database config
-  const accessControl = await AccessControl.create('./config/database.json');
-  
-  // Add access levels and routes
-  const adapter = (accessControl as any).adapter;
-  await adapter.bulkAddLevels(accessLevels);
-  await accessControl.bulkInsertRoutes(routes);
-  
-  return accessControl;
 }
 ```
