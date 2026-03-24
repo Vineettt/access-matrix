@@ -115,6 +115,7 @@ See [Route Patterns Documentation](docs/ROUTE_PATTERNS.md) for detailed examples
 - [Configuration Guide](docs/CONFIGURATION.md)
 - [Route Patterns](docs/ROUTE_PATTERNS.md)
 - [Examples](examples/)
+- [Changelog](CHANGELOG.md)
 
 ## Development
 
