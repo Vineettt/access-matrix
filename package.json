@@ -62,6 +62,10 @@
   "bugs": {
     "url": "https://github.com/Vineettt/access-matrix/issues"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Vineettt"
+  },
   "dependencies": {
     "better-sqlite3": "^9.0.0",
     "pg": "^8.11.0"
