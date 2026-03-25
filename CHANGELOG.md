@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-03-25
+
+### 🐛 **Bug Fixes**
+- ✅ **Removed npm review references**: npm doesn't have built-in review system
+- ✅ **Updated feedback channels**: Focus on GitHub issues, discussions, and direct contact
+- ✅ **Corrected documentation**: Accurate information about review submission
+
+### 📝 **Documentation Updates**
+- ✅ **Fixed misleading links**: Removed non-existent npm review functionality
+- ✅ **Updated review templates**: Correct submission methods
+- ✅ **Added GitHub stars**: Primary way to show package support
+
+---
+
 ## [0.1.1] - 2026-03-24
 
 ### 📝 **Documentation & Community**
@@ -9,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - ✅ **Review Templates**: Created detailed review forms for users
 - ✅ **Professional Badges**: Added npm stats and GitHub badges
 - ✅ **Funding Support**: Added GitHub sponsorship options
-- ✅ **Multiple Feedback Channels**: npm reviews, GitHub issues, discussions
+- ✅ **Multiple Feedback Channels**: GitHub issues, discussions, and direct contact
 
 ### 🚀 **Improvements**
 - ✅ **Better User Engagement**: Multiple ways to share feedback

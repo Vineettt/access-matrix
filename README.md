@@ -137,8 +137,8 @@ npm run example:autoload
 We'd love to hear your feedback! Help us improve access-matrix:
 
 ### 🌟 **Rate This Package**
-- [Leave a review on npm](https://www.npmjs.com/package/access-matrix)
-- [Star on GitHub](https://github.com/Vineettt/access-matrix)
+- [⭐ Star on GitHub](https://github.com/Vineettt/access-matrix)
+- [📊 View npm stats](https://www.npmjs.com/package/access-matrix)
 
 ### 📋 **Quick Review Form**
 Copy this template and share your experience:
@@ -174,10 +174,9 @@ _______________________________________________________
 
 ### 🎯 **How to Share Your Review**
 
-1. **npm Review**: Visit [access-matrix on npm](https://www.npmjs.com/package/access-matrix) → "Write a Review"
-2. **GitHub Issue**: Use the template above in [Issues](https://github.com/Vineettt/access-matrix/issues)
-3. **GitHub Discussion**: Start a [Discussion](https://github.com/Vineettt/access-matrix/discussions)
-4. **Detailed Template**: See [REVIEW_TEMPLATE.md](./REVIEW_TEMPLATE.md) for comprehensive feedback
+1. **GitHub Issue**: Use the template above in [Issues](https://github.com/Vineettt/access-matrix/issues)
+2. **GitHub Discussion**: Start a [Discussion](https://github.com/Vineettt/access-matrix/discussions)
+3. **Detailed Template**: See [REVIEW_TEMPLATE.md](./REVIEW_TEMPLATE.md) for comprehensive feedback
 
 ### 📊 **Review Analytics**
 We track all feedback to improve access-matrix:

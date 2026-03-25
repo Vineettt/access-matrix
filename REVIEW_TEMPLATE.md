@@ -2,17 +2,12 @@
 
 ## 📋 How to Submit Your Review
 
-### Option 1: npm Review (Recommended)
-1. Visit [access-matrix on npm](https://www.npmjs.com/package/access-matrix)
-2. Click "Write a Review" 
-3. Share your experience with the community
-
-### Option 2: GitHub Issue
+### Option 1: GitHub Issue (Recommended)
 1. Go to [Issues](https://github.com/Vineettt/access-matrix/issues)
 2. Click "New Issue"
 3. Use the template below
 
-### Option 3: GitHub Discussion
+### Option 2: GitHub Discussion
 1. Visit [Discussions](https://github.com/Vineettt/access-matrix/discussions)
 2. Click "New Discussion"
 3. Choose "General" category
@@ -113,6 +108,7 @@ Every review, suggestion, or bug report makes this package better for everyone.
 - **npm:** [access-matrix](https://www.npmjs.com/package/access-matrix)
 - **Issues:** [Report problems](https://github.com/Vineettt/access-matrix/issues)
 - **Discussions:** [Ask questions](https://github.com/Vineettt/access-matrix/discussions)
+- **Stars:** [⭐ Show your support](https://github.com/Vineettt/access-matrix/stargazers)
 
 ---
 
